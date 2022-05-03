@@ -86,6 +86,7 @@ func main() {
 		proto.WithPackage(deps.Handlers.PackageHandler),
 		proto.WithService(deps.Handlers.ServiceHandler),
 		proto.WithMessage(deps.Handlers.MessageHandler),
+		proto.WithEnum(deps.Handlers.EnumHandler),
 	)
 
 	deps.Handlers.Output.BaseUrl = baseUrl

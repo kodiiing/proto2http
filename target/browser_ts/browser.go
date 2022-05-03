@@ -25,13 +25,15 @@ func (Browser) Generate(data target.Proto) ([]byte, error) {
 	var typesMap = make(typeMap)
 
 	for _, srv := range data.Services {
-		var comments = strings.Split(srv.Comment, "\n")
-		writer.WriteString("/*")
-		for _, c := range comments {
-			writer.WriteString(" " + strings.TrimSpace(c))
-			writer.WriteString("\n")
+		if len(srv.Comment) > 0 {
+			var comments = strings.Split(srv.Comment, "\n")
+			writer.WriteString("/*")
+			for _, c := range comments {
+				writer.WriteString(" " + strings.TrimSpace(c))
+				writer.WriteString("\n")
+			}
+			writer.WriteString(" */\n")
 		}
-		writer.WriteString("*/\n")
 
 		writer.WriteString("export class ")
 		writer.WriteString(srv.Name)
@@ -96,6 +98,9 @@ func (Browser) Generate(data target.Proto) ([]byte, error) {
 
 					typesWriter.WriteString(": ")
 					typesWriter.WriteString(typeToTypescript(t.Type))
+					if t.Repeated {
+						typesWriter.WriteString("[]")
+					}
 					typesWriter.WriteString("\n")
 				}
 
@@ -149,6 +154,11 @@ func (Browser) Generate(data target.Proto) ([]byte, error) {
 
 					typesWriter.WriteString(": ")
 					typesWriter.WriteString(typeToTypescript(t.Type))
+
+					if t.Repeated {
+						typesWriter.WriteString("[]")
+					}
+
 					typesWriter.WriteString("\n")
 				}
 

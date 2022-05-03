@@ -16,10 +16,12 @@ type temporaryRpc struct {
 
 type collection struct {
 	proto.Visitor
-	RPC      []temporaryRpc
-	Messages []target.Message
-	Fields   []target.Field
-	Comments []string
+	RPC        []temporaryRpc
+	Messages   []target.Message
+	Fields     []target.Field
+	Enums      []target.Enum
+	EnumValues []target.EnumValue
+	Comments   []string
 }
 
 // //VisitProto(p *Proto)
@@ -105,5 +107,45 @@ func (c *collection) VisitNormalField(e *proto.NormalField) {
 		Repeated: e.Repeated,
 		Required: e.Required,
 		Optional: e.Optional,
+	})
+}
+
+func (c *collection) VisitMapField(f *proto.MapField) {
+	var comment string
+	if f.Comment != nil {
+		comment = strings.Join(f.Comment.Lines, "\n")
+	}
+
+	c.Fields = append(c.Fields, target.Field{
+		Name:     f.Name,
+		Comment:  comment,
+		Type:     f.Type,
+		Sequence: int16(f.Sequence),
+		Repeated: false,
+	})
+}
+
+func (c *collection) VisitEnum(e *proto.Enum) {
+	var comment string
+	if e.Comment != nil {
+		comment = strings.Join(e.Comment.Lines, "\n")
+	}
+
+	c.Enums = append(c.Enums, target.Enum{
+		Name:    e.Name,
+		Comment: comment,
+	})
+}
+
+func (c *collection) VisitEnumField(i *proto.EnumField) {
+	var comment string
+	if i.Comment != nil {
+		comment = strings.Join(i.Comment.Lines, "\n")
+	}
+
+	c.EnumValues = append(c.EnumValues, target.EnumValue{
+		Key:     i.Name,
+		Comment: comment,
+		Integer: int16(i.Integer),
 	})
 }

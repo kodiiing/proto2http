@@ -40,3 +40,15 @@ type Field struct {
 	Optional bool
 	Required bool
 }
+
+type Enum struct {
+	Name    string
+	Comment string
+	Values  []EnumValue
+}
+
+type EnumValue struct {
+	Key     string
+	Comment string
+	Integer int16
+}

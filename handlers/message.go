@@ -8,6 +8,8 @@ import (
 )
 
 func (d *Dependency) MessageHandler(msg *proto.Message) {
+	d.Log.Printf("message handler got called")
+
 	if d.collection == nil {
 		d.collection = &collection{}
 	}
