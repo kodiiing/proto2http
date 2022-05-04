@@ -202,6 +202,120 @@ func (Browser) Generate(data target.Proto) ([]byte, error) {
 		writer.WriteString("}")
 	}
 
+	for _, msg := range data.Messages {
+		if !typesMap.Exists(msg.Name) {
+			if len(msg.Comment) > 0 {
+				typesWriter.WriteString("/**\n")
+
+				var comments = strings.Split(msg.Comment, "\n")
+				for _, c := range comments {
+					trimmed := strings.TrimSpace(c)
+					if trimmed == "" {
+						continue
+					}
+
+					typesWriter.WriteString(" * " + trimmed)
+					typesWriter.WriteString("\n")
+				}
+
+				typesWriter.WriteString(" */\n")
+			}
+
+			typesWriter.WriteString("type " + msg.Name + " = {\n")
+
+			for _, t := range msg.Fields {
+				if len(t.Comment) > 0 {
+					typesWriter.WriteString(indent + "/**\n")
+
+					var comments = strings.Split(t.Comment, "\n")
+					for _, c := range comments {
+						trimmed := strings.TrimSpace(c)
+						if trimmed == "" {
+							continue
+						}
+						typesWriter.WriteString(indent)
+						typesWriter.WriteString(" * " + trimmed)
+						typesWriter.WriteString("\n")
+					}
+
+					typesWriter.WriteString(indent + " */\n")
+				}
+				typesWriter.WriteString(indent)
+				typesWriter.WriteString(t.Name)
+
+				if t.Optional {
+					typesWriter.WriteString("?")
+				}
+
+				typesWriter.WriteString(": ")
+				typesWriter.WriteString(typeToTypescript(t.Type))
+				if t.Repeated {
+					typesWriter.WriteString("[]")
+				}
+				typesWriter.WriteString("\n")
+			}
+
+			typesWriter.WriteString("}\n\n")
+
+			typesMap.Add(msg.Name)
+		}
+	}
+
+	for _, enum := range data.Enums {
+		if !typesMap.Exists(enum.Name) {
+			if len(enum.Comment) > 0 {
+				typesWriter.WriteString("/**\n")
+
+				var comments = strings.Split(enum.Comment, "\n")
+				for _, c := range comments {
+					trimmed := strings.TrimSpace(c)
+					if trimmed == "" {
+						continue
+					}
+
+					typesWriter.WriteString(" * " + trimmed)
+					typesWriter.WriteString("\n")
+				}
+
+				typesWriter.WriteString(" */\n")
+			}
+
+			typesWriter.WriteString("enum " + enum.Name + " {\n")
+
+			for i, t := range enum.Values {
+				if len(t.Comment) > 0 {
+					typesWriter.WriteString(indent + "/**\n")
+
+					var comments = strings.Split(t.Comment, "\n")
+					for _, c := range comments {
+						trimmed := strings.TrimSpace(c)
+						if trimmed == "" {
+							continue
+						}
+						typesWriter.WriteString(indent)
+						typesWriter.WriteString(" * " + trimmed)
+						typesWriter.WriteString("\n")
+					}
+
+					typesWriter.WriteString(indent + " */\n")
+				}
+				typesWriter.WriteString(indent)
+				typesWriter.WriteString(t.Key)
+
+				typesWriter.WriteString(" = ")
+				typesWriter.WriteString(strconv.Itoa(int(t.Integer)))
+				if i != len(enum.Values)-1 {
+					typesWriter.WriteString(",")
+				}
+				typesWriter.WriteString("\n")
+			}
+
+			typesWriter.WriteString("}\n\n")
+
+			typesMap.Add(enum.Name)
+		}
+	}
+
 	var finalWriter bytes.Buffer
 	finalWriter.WriteString(typesWriter.String())
 	finalWriter.WriteString(writer.String())

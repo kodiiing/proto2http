@@ -8,7 +8,9 @@ import (
 )
 
 func (d *Dependency) EnumHandler(en *proto.Enum) {
-	d.Log.Printf("enum handler got called")
+	if d.Verbose {
+		d.Log.Printf("found enum: %s", en.Name)
+	}
 	var comment string
 	if en.Comment != nil {
 		comment = strings.Join(en.Comment.Lines, "\n")
@@ -26,6 +28,5 @@ func (d *Dependency) EnumHandler(en *proto.Enum) {
 		Values:  tempCollection.EnumValues,
 	}
 
-	d.collection.Enums = append(d.collection.Enums, enumItem)
-
+	d.Output.Enums = append(d.Output.Enums, enumItem)
 }

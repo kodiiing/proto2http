@@ -8,8 +8,9 @@ import (
 )
 
 func (d *Dependency) MessageHandler(msg *proto.Message) {
-	d.Log.Printf("message handler got called")
-
+	if d.Verbose {
+		d.Log.Printf("found message: %s", msg.Name)
+	}
 	if d.collection == nil {
 		d.collection = &collection{}
 	}
@@ -46,6 +47,7 @@ func (d *Dependency) MessageHandler(msg *proto.Message) {
 	}
 
 	d.collection.Messages = append(d.collection.Messages, message)
+	d.Output.Messages = append(d.Output.Messages, message)
 
 	for i, srv := range d.Output.Services {
 		for j, rpc := range srv.RPCs {
@@ -66,12 +68,20 @@ func (d *Dependency) MessageHandler(msg *proto.Message) {
 			}
 
 			for _, m := range d.collection.Messages {
-				if m.Name == requestTypeName {
+				if m.Name == requestTypeName && d.Output.Services[i].RPCs[j].Request.Name == "" {
 					d.Output.Services[i].RPCs[j].Request = m
+
+					if d.Verbose {
+						d.Log.Printf("found message %s for rpc %s", m.Name, d.Output.Services[i].RPCs[j].Name)
+					}
 				}
 
-				if m.Name == responseTypeName {
+				if m.Name == responseTypeName && d.Output.Services[i].RPCs[j].Response.Name == "" {
 					d.Output.Services[i].RPCs[j].Response = m
+
+					if d.Verbose {
+						d.Log.Printf("found message %s for rpc %s", m.Name, d.Output.Services[i].RPCs[j].Name)
+					}
 					break
 				}
 			}

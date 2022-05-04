@@ -91,8 +91,6 @@ func main() {
 
 	deps.Handlers.Output.BaseUrl = baseUrl
 
-	logger.Printf("%+v", deps.Handlers.Output)
-
 	err = file.Close()
 	if err != nil && !errors.Is(err, os.ErrClosed) {
 		log.Printf("error closing file: %v", err)

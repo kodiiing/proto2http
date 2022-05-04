@@ -33,5 +33,6 @@ func (d *Dependency) ServiceHandler(srv *proto.Service) {
 			Comment: col.Comment,
 		})
 	}
+
 	d.Output.Services = append(d.Output.Services, service)
 }

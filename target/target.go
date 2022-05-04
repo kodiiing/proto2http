@@ -10,6 +10,8 @@ type Proto struct {
 	Comment  string
 	BaseUrl  string
 	Services []Service
+	Enums    []Enum
+	Messages []Message
 }
 
 type Service struct {
