@@ -20,24 +20,24 @@ type Dependency struct {
 
 func main() {
 	var protoPath string
-	flag.StringVar(&protoPath, "path", "", "path to proto file")
+	flag.StringVar(&protoPath, "path", "", "Path to the proto file (required)")
 
 	var outputDirectory string
-	flag.StringVar(&outputDirectory, "output", "", "output directory")
+	flag.StringVar(&outputDirectory, "output", "", "Output directory (optional, default: current path)")
 
 	var verbose bool
-	flag.BoolVar(&verbose, "verbose", false, "verbose output")
+	flag.BoolVar(&verbose, "verbose", false, "Verbose output (optional, default: false)")
 
 	var languageTarget string
-	flag.StringVar(&languageTarget, "target", "", "target language")
+	flag.StringVar(&languageTarget, "target", "", "Target language (required). Available values: browser-ts")
 
 	var baseUrl string
-	flag.StringVar(&baseUrl, "baseurl", "", "http endpoint base url")
+	flag.StringVar(&baseUrl, "baseurl", "", "Base URL for HTTP endpoint (optional, default: empty string)")
 
 	flag.Parse()
 
 	// Validate targets
-	availableTargets := []string{"browser-js", "browser-ts", "go"}
+	availableTargets := []string{"browser-ts"}
 	var targetExist bool
 	for _, t := range availableTargets {
 		if languageTarget == t {
@@ -48,7 +48,13 @@ func main() {
 	logger := log.New(os.Stderr, "[proto2http] ", 0)
 
 	if !targetExist {
-		logger.Printf("target does not exists")
+		logger.Printf("target does not available")
+		os.Exit(1)
+		return
+	}
+
+	if protoPath == "" {
+		logger.Printf("proto path cannot be empty")
 		os.Exit(1)
 		return
 	}

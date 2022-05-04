@@ -27,9 +27,9 @@ func (Browser) Generate(data target.Proto) ([]byte, error) {
 	for _, srv := range data.Services {
 		if len(srv.Comment) > 0 {
 			var comments = strings.Split(srv.Comment, "\n")
-			writer.WriteString("/*")
+			writer.WriteString("/**\n")
 			for _, c := range comments {
-				writer.WriteString(" " + strings.TrimSpace(c))
+				writer.WriteString(" * " + strings.TrimSpace(c))
 				writer.WriteString("\n")
 			}
 			writer.WriteString(" */\n")
