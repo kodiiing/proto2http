@@ -9,6 +9,7 @@ import (
 	"proto2http/handlers"
 	"proto2http/target"
 	"proto2http/target/browser_ts"
+	goserver "proto2http/target/go_server"
 
 	"github.com/emicklei/proto"
 )
@@ -37,7 +38,7 @@ func main() {
 	flag.Parse()
 
 	// Validate targets
-	availableTargets := []string{"browser-ts"}
+	availableTargets := []string{"browser-ts", "go-server"}
 	var targetExist bool
 	for _, t := range availableTargets {
 		if languageTarget == t {
@@ -106,6 +107,8 @@ func main() {
 	switch languageTarget {
 	case "browser-ts":
 		deps.TargetGenerator = browser_ts.New()
+	case "go-server":
+		deps.TargetGenerator = goserver.New()
 	default:
 		logger.Printf("Unrecognizable target")
 		os.Exit(12)
