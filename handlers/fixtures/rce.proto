@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package rce;
+
+option java_package = "com.kodiiing.rce";
+option java_multiple_files = true;
+option go_package = "rce_proto";
+option csharp_namespace = "Kodiiing.Protos.Rce";
+
+service CodeExecutionEngineService {
+    rpc ListRuntimes(EmptyRequest) returns (Runtimes);
+    rpc Execute(CodeRequest) returns (CodeResponse);
+    rpc Ping(EmptyRequest) returns (PingResponse);
+}
+
+message EmptyRequest {}
+
+message Runtimes {
+    repeated Runtime runtime = 1;
+}
+
+message Runtime {
+    string language = 1;
+    string version = 2;
+    repeated string aliases = 3;
+    bool compiled = 4;
+}
+
+message PingResponse {
+    string message = 1;
+}
+
+message CodeRequest {
+    string language = 1;
+    string version = 2;
+    string code = 3;
+    int32 compile_timeout = 4;
+    int32 run_timeout = 5;
+    int32 memory_limit = 6;
+}
+
+message CodeResponse {
+    message Output {
+        string stdout = 1;
+        string stderr = 2;
+        string output = 3;
+        int32 exitCode = 4;
+    }
+
+    string language = 1;
+    string version = 2;
+    Output compile = 3;
+    Output runtime = 4;
+}
