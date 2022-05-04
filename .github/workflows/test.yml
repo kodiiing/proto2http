@@ -1,0 +1,42 @@
+name: Test
+
+on:
+  pull_request:
+    branches:
+      - "*"
+  push:
+    branches:
+      - "*"
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.18
+
+      - name: Installling dependencies
+        run: go mod download
+
+      - name: Build
+        run: go build cmd/main.go
+
+      - name: Run test & coverage
+        run: go test -v -coverprofile=coverage.out -covermode=atomic ./...
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: go
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
+
+      - uses: codecov/codecov-action@v2
