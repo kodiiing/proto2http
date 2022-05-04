@@ -31,12 +31,4 @@ jobs:
       - name: Run test & coverage
         run: go test -v -coverprofile=coverage.out -covermode=atomic ./...
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v1
-        with:
-          languages: go
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v1
-
       - uses: codecov/codecov-action@v2
