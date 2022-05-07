@@ -8,8 +8,8 @@ import (
 	"path"
 	"proto2http/handlers"
 	"proto2http/target"
-	"proto2http/target/browser_ts"
-	goserver "proto2http/target/go_server"
+	browserts "proto2http/target/browser_ts"
+	servergo "proto2http/target/server_go"
 
 	"github.com/emicklei/proto"
 )
@@ -106,9 +106,9 @@ func main() {
 
 	switch languageTarget {
 	case "browser-ts":
-		deps.TargetGenerator = browser_ts.New()
-	case "go-server":
-		deps.TargetGenerator = goserver.New()
+		deps.TargetGenerator = browserts.New()
+	case "server-go":
+		deps.TargetGenerator = servergo.New()
 	default:
 		logger.Printf("Unrecognizable target")
 		os.Exit(12)

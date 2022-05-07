@@ -1,13 +1,13 @@
-package browser_ts_test
+package browserts_test
 
 import (
 	"proto2http/target"
-	"proto2http/target/browser_ts"
+	browserts "proto2http/target/browser_ts"
 	"testing"
 )
 
 func TestFileExtension(t *testing.T) {
-	b := browser_ts.New()
+	b := browserts.New()
 
 	if b.FileExtension() != "ts" {
 		t.Errorf("Expected file extension to be 'ts', got '%s'", b.FileExtension())
@@ -15,7 +15,7 @@ func TestFileExtension(t *testing.T) {
 }
 
 func TestGenerate_RouteGuide(t *testing.T) {
-	b := browser_ts.New()
+	b := browserts.New()
 
 	data := target.Proto{
 		Name:    "routeguide",
@@ -450,7 +450,7 @@ func TestGenerate_RouteGuide(t *testing.T) {
 }
 
 func TestGenerate_Rce(t *testing.T) {
-	b := browser_ts.New()
+	b := browserts.New()
 
 	data := target.Proto{
 		Name:    "rce",

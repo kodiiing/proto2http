@@ -1,13 +1,13 @@
-package goserver_test
+package servergo_test
 
 import (
 	"proto2http/target"
-	goserver "proto2http/target/go_server"
+	servergo "proto2http/target/server_go"
 	"testing"
 )
 
 func TestFileExtension(t *testing.T) {
-	b := goserver.New()
+	b := servergo.New()
 
 	if b.FileExtension() != "go" {
 		t.Errorf("Expected file extension to be 'go', got '%s'", b.FileExtension())
@@ -15,7 +15,7 @@ func TestFileExtension(t *testing.T) {
 }
 
 func TestGenerate_RouteGuide(t *testing.T) {
-	b := goserver.New()
+	b := servergo.New()
 
 	data := target.Proto{
 		Name:    "routeguide",
@@ -450,7 +450,7 @@ func TestGenerate_RouteGuide(t *testing.T) {
 }
 
 func TestGenerate_Rce(t *testing.T) {
-	b := goserver.New()
+	b := servergo.New()
 
 	data := target.Proto{
 		Name:    "rce",

@@ -1,4 +1,4 @@
-package goserver
+package servergo
 
 import (
 	"bytes"
@@ -7,17 +7,17 @@ import (
 	"strings"
 )
 
-type GoServer struct{}
+type ServerGo struct{}
 
-func New() *GoServer {
-	return &GoServer{}
+func New() *ServerGo {
+	return &ServerGo{}
 }
 
-func (GoServer) FileExtension() string {
+func (ServerGo) FileExtension() string {
 	return "go"
 }
 
-func (GoServer) Generate(data target.Proto) ([]byte, error) {
+func (ServerGo) Generate(data target.Proto) ([]byte, error) {
 	var indent = "\t"
 
 	var headersWriter strings.Builder
@@ -49,12 +49,12 @@ func (GoServer) Generate(data target.Proto) ([]byte, error) {
 			}
 		}
 
-		formattedServiceName := strings.ToUpper(string(srv.Name[0])) + string(srv.Name[1:])
+		capitalizedServiceName := strings.ToUpper(string(srv.Name[0])) + string(srv.Name[1:])
 
-		serverWriter.WriteString("func New" + formattedServiceName + "Server(implementation " + formattedServiceName + "Server) http.Handler {\n")
+		serverWriter.WriteString("func New" + capitalizedServiceName + "Server(implementation " + capitalizedServiceName + "Server) http.Handler {\n")
 		serverWriter.WriteString(indent + "mux := http.NewServeMux()\n")
 
-		interfaceWriter.WriteString("type " + formattedServiceName + "Server interface {\n")
+		interfaceWriter.WriteString("type " + capitalizedServiceName + "Server interface {\n")
 
 		for _, rpc := range srv.RPCs {
 			// Do things with the type
@@ -72,7 +72,8 @@ func (GoServer) Generate(data target.Proto) ([]byte, error) {
 					}
 				}
 
-				typesWriter.WriteString("type " + strings.ToUpper(string(rpc.Request.Name[0])) + string(rpc.Request.Name[1:]) + " struct {\n")
+				capitalizedStructName := strings.ToUpper(string(rpc.Request.Name[0])) + string(rpc.Request.Name[1:])
+				typesWriter.WriteString("type " + capitalizedStructName + " struct {\n")
 
 				for _, t := range rpc.Request.Fields {
 					if len(t.Comment) > 0 {
@@ -117,7 +118,8 @@ func (GoServer) Generate(data target.Proto) ([]byte, error) {
 					}
 				}
 
-				typesWriter.WriteString("type " + strings.ToUpper(string(rpc.Response.Name[0])) + string(rpc.Response.Name[1:]) + " struct {\n")
+				capitalizedStructName := strings.ToUpper(string(rpc.Response.Name[0])) + string(rpc.Response.Name[1:])
+				typesWriter.WriteString("type " + capitalizedStructName + " struct {\n")
 
 				for _, t := range rpc.Response.Fields {
 					if len(t.Comment) > 0 {
@@ -148,22 +150,22 @@ func (GoServer) Generate(data target.Proto) ([]byte, error) {
 				typesMap.Add(rpc.Response.Name)
 			}
 
-			formattedRpcName := strings.ToUpper(string(rpc.Name[0])) + string(rpc.Name[1:])
-			formattedRequestName := strings.ToUpper(string(rpc.Request.Name[0])) + string(rpc.Request.Name[1:])
-			formattedResponseName := strings.ToUpper(string(rpc.Response.Name[0])) + string(rpc.Response.Name[1:])
+			capitalizedRpcName := strings.ToUpper(string(rpc.Name[0])) + string(rpc.Name[1:])
+			capitalizedRequestName := strings.ToUpper(string(rpc.Request.Name[0])) + string(rpc.Request.Name[1:])
+			capitalizedResponseName := strings.ToUpper(string(rpc.Response.Name[0])) + string(rpc.Response.Name[1:])
 
 			serverWriter.WriteString(indent + "mux.HandleFunc(\"/" + rpc.Name + "\", func(w http.ResponseWriter, r *http.Request) {\n")
 			serverWriter.WriteString(indent + indent + "if r.Method != http.MethodPost {\n")
 			serverWriter.WriteString(indent + indent + indent + "w.WriteHeader(http.StatusMethodNotAllowed)\n")
 			serverWriter.WriteString(indent + indent + indent + "return\n")
 			serverWriter.WriteString(indent + indent + "}\n")
-			serverWriter.WriteString(indent + indent + "var req " + formattedRequestName + "\n")
+			serverWriter.WriteString(indent + indent + "var req " + capitalizedRequestName + "\n")
 			serverWriter.WriteString(indent + indent + "err := json.NewDecoder(r.Body).Decode(&req)\n")
 			serverWriter.WriteString(indent + indent + "if err != nil {\n")
 			serverWriter.WriteString(indent + indent + indent + "http.Error(w, err.Error(), http.StatusBadRequest)\n")
 			serverWriter.WriteString(indent + indent + indent + "return\n")
 			serverWriter.WriteString(indent + indent + "}\n")
-			serverWriter.WriteString(indent + indent + "resp, err := implementation." + formattedRpcName + "(r.Context(), &req)\n")
+			serverWriter.WriteString(indent + indent + "resp, err := implementation." + capitalizedRpcName + "(r.Context(), &req)\n")
 			serverWriter.WriteString(indent + indent + "if err != nil {\n")
 			serverWriter.WriteString(indent + indent + indent + "http.Error(w, err.Error(), http.StatusInternalServerError)\n")
 			serverWriter.WriteString(indent + indent + indent + "return\n")
@@ -186,7 +188,7 @@ func (GoServer) Generate(data target.Proto) ([]byte, error) {
 				interfaceWriter.WriteString("// " + strings.TrimSpace(c))
 				interfaceWriter.WriteString("\n")
 			}
-			interfaceWriter.WriteString(indent + formattedRpcName + "(ctx context.Context, req *" + formattedRequestName + ") (*" + formattedResponseName + ", error)\n")
+			interfaceWriter.WriteString(indent + capitalizedRpcName + "(ctx context.Context, req *" + capitalizedRequestName + ") (*" + capitalizedResponseName + ", error)\n")
 		}
 
 		serverWriter.WriteString(indent + "return mux\n")
@@ -210,7 +212,8 @@ func (GoServer) Generate(data target.Proto) ([]byte, error) {
 				}
 			}
 
-			typesWriter.WriteString("type " + strings.ToUpper(string(msg.Name[0])) + string(msg.Name[1:]) + " struct {\n")
+			capitalizedStructName := strings.ToUpper(string(msg.Name[0])) + string(msg.Name[1:])
+			typesWriter.WriteString("type " + capitalizedStructName + " struct {\n")
 
 			for _, t := range msg.Fields {
 				if len(t.Comment) > 0 {
@@ -257,9 +260,9 @@ func (GoServer) Generate(data target.Proto) ([]byte, error) {
 				}
 			}
 
-			formattedEnumName := strings.ToUpper(string(enum.Name[0])) + string(enum.Name[1:])
+			capitalizedEnumName := strings.ToUpper(string(enum.Name[0])) + string(enum.Name[1:])
 
-			typesWriter.WriteString("type " + formattedEnumName + " uint32\n")
+			typesWriter.WriteString("type " + capitalizedEnumName + " uint32\n")
 			typesWriter.WriteString("const (\n")
 			for i, t := range enum.Values {
 				if len(t.Comment) > 0 {
@@ -274,9 +277,9 @@ func (GoServer) Generate(data target.Proto) ([]byte, error) {
 						typesWriter.WriteString("\n")
 					}
 				}
-				formattedEnumValue := strings.ToUpper(string(t.Key[0])) + string(t.Key[1:])
 
-				typesWriter.WriteString(indent + formattedEnumName + formattedEnumValue + " " + formattedEnumName + " = " + strconv.Itoa(i) + "\n")
+				capitalizedEnumValue := strings.ToUpper(string(t.Key[0])) + string(t.Key[1:])
+				typesWriter.WriteString(indent + capitalizedEnumName + capitalizedEnumValue + " " + capitalizedEnumName + " = " + strconv.Itoa(i) + "\n")
 			}
 
 			typesWriter.WriteString(")\n\n")
@@ -297,13 +300,8 @@ func (GoServer) Generate(data target.Proto) ([]byte, error) {
 type typeMap map[string]bool
 
 func (t typeMap) Exists(key string) bool {
-	for k := range t {
-		if k == key {
-			return true
-		}
-	}
-
-	return false
+	_, ok := t[key]
+	return ok
 }
 
 func (t typeMap) Add(key string) {
