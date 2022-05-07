@@ -1,21 +1,21 @@
-package browserts_test
+package servergo_test
 
 import (
 	"proto2http/target"
-	browserts "proto2http/target/browser_ts"
+	servergo "proto2http/target/server_go"
 	"testing"
 )
 
 func TestFileExtension(t *testing.T) {
-	b := browserts.New()
+	b := servergo.New()
 
-	if b.FileExtension() != "ts" {
-		t.Errorf("Expected file extension to be 'ts', got '%s'", b.FileExtension())
+	if b.FileExtension() != "go" {
+		t.Errorf("Expected file extension to be 'go', got '%s'", b.FileExtension())
 	}
 }
 
 func TestGenerate_RouteGuide(t *testing.T) {
-	b := browserts.New()
+	b := servergo.New()
 
 	data := target.Proto{
 		Name:    "routeguide",
@@ -450,7 +450,7 @@ func TestGenerate_RouteGuide(t *testing.T) {
 }
 
 func TestGenerate_Rce(t *testing.T) {
-	b := browserts.New()
+	b := servergo.New()
 
 	data := target.Proto{
 		Name:    "rce",

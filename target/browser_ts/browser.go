@@ -1,5 +1,4 @@
-// browser provides
-package browser_ts
+package browserts
 
 import (
 	"bytes"
