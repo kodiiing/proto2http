@@ -38,7 +38,7 @@ func main() {
 	flag.Parse()
 
 	// Validate targets
-	availableTargets := []string{"browser-ts", "go-server"}
+	availableTargets := []string{"browser-ts", "server-go"}
 	var targetExist bool
 	for _, t := range availableTargets {
 		if languageTarget == t {
