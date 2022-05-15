@@ -71,7 +71,21 @@ export class GreeterClient {
 }
 ```
 
+For all client and server samples of [router_guide.proto](./handlers//fixtures/route_guide.proto), see [this gist](https://gist.github.com/aldy505/51493cd3026c6e2be563286e6319532a).
+
 ## Installation
+
+### Precompiled binary
+
+See [RELEASES](https://github.com/kodiiing/proto2http/releases) page.
+
+Available systems: MacOS AMD64, Linux 386, Linux AMD64, Linux ARM, Linux ARM64, Windows 386, Windows AMD64, Windows ARM.
+
+### Install it as a Go binary
+
+```sh
+go install github.com/kodiiing/proto2http@latest
+```
 
 ### Build from source
 
@@ -80,12 +94,6 @@ You will need Go 1.17+
 ```sh
 go build -o proto2http cmd/main.go
 mv proto2http /usr/local/bin/proto2http
-```
-
-### Or install it as a Go binary
-
-```sh
-go install github.com/kodiiing/proto2http@latest
 ```
 
 ## License
