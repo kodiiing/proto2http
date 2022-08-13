@@ -38,6 +38,7 @@ func (ServerGo) Generate(data target.Proto) ([]byte, error) {
 	headersWriter.WriteString(indent + "\"context\"\n")
 	headersWriter.WriteString(indent + "\"encoding/json\"\n")
 	headersWriter.WriteString(indent + "\"net/http\"\n")
+	headersWriter.WriteString(indent + "\"log\"\n")
 	headersWriter.WriteString(")\n\n")
 
 	for _, srv := range data.Services {
@@ -50,6 +51,11 @@ func (ServerGo) Generate(data target.Proto) ([]byte, error) {
 		}
 
 		capitalizedServiceName := strings.ToUpper(string(srv.Name[0])) + string(srv.Name[1:])
+
+		typesWriter.WriteString("type " + capitalizedServiceName + "Error struct {\n")
+		typesWriter.WriteString(indent + "StatusCode int\n")
+		typesWriter.WriteString(indent + "Error error\n")
+		typesWriter.WriteString("}\n\n")
 
 		serverWriter.WriteString("func New" + capitalizedServiceName + "Server(implementation " + capitalizedServiceName + "Server) http.Handler {\n")
 		serverWriter.WriteString(indent + "mux := http.NewServeMux()\n")
@@ -160,22 +166,35 @@ func (ServerGo) Generate(data target.Proto) ([]byte, error) {
 			serverWriter.WriteString(indent + indent + indent + "return\n")
 			serverWriter.WriteString(indent + indent + "}\n")
 			serverWriter.WriteString(indent + indent + "var req " + capitalizedRequestName + "\n")
-			serverWriter.WriteString(indent + indent + "err := json.NewDecoder(r.Body).Decode(&req)\n")
-			serverWriter.WriteString(indent + indent + "if err != nil {\n")
-			serverWriter.WriteString(indent + indent + indent + "http.Error(w, err.Error(), http.StatusBadRequest)\n")
+			serverWriter.WriteString(indent + indent + "e := json.NewDecoder(r.Body).Decode(&req)\n")
+			serverWriter.WriteString(indent + indent + "if e != nil {\n")
+			serverWriter.WriteString(indent + indent + indent + "w.Header().Set(\"Content-Type\", \"application/json\")\n")
+			serverWriter.WriteString(indent + indent + indent + "w.WriteHeader(400)\n")
+			serverWriter.WriteString(indent + indent + indent + "e := json.NewEncoder(w).Encode(map[string]string{\n")
+			serverWriter.WriteString(indent + indent + indent + indent + "\"message\": e.Error(),\n")
+			serverWriter.WriteString(indent + indent + indent + "})\n")
+			serverWriter.WriteString(indent + indent + indent + "if e != nil {\n")
+			serverWriter.WriteString(indent + indent + indent + indent + "log.Printf(\"[" + capitalizedServiceName + " - " + capitalizedRpcName + "error] writing to response stream: %s\", e.Error())\n")
+			serverWriter.WriteString(indent + indent + indent + "}\n")
 			serverWriter.WriteString(indent + indent + indent + "return\n")
 			serverWriter.WriteString(indent + indent + "}\n")
 			serverWriter.WriteString(indent + indent + "resp, err := implementation." + capitalizedRpcName + "(r.Context(), &req)\n")
 			serverWriter.WriteString(indent + indent + "if err != nil {\n")
-			serverWriter.WriteString(indent + indent + indent + "http.Error(w, err.Error(), http.StatusInternalServerError)\n")
+			serverWriter.WriteString(indent + indent + indent + "w.Header().Set(\"Content-Type\", \"application/json\")\n")
+			serverWriter.WriteString(indent + indent + indent + "w.WriteHeader(err.StatusCode)\n")
+			serverWriter.WriteString(indent + indent + indent + "e := json.NewEncoder(w).Encode(map[string]string{\n")
+			serverWriter.WriteString(indent + indent + indent + indent + "\"message\": err.Error.Error(),\n")
+			serverWriter.WriteString(indent + indent + indent + "})\n")
+			serverWriter.WriteString(indent + indent + indent + "if e != nil {\n")
+			serverWriter.WriteString(indent + indent + indent + indent + "log.Printf(\"[" + capitalizedServiceName + " - " + capitalizedRpcName + "error] writing to response stream: %s\", e.Error())\n")
+			serverWriter.WriteString(indent + indent + indent + "}\n")
 			serverWriter.WriteString(indent + indent + indent + "return\n")
 			serverWriter.WriteString(indent + indent + "}\n")
 			serverWriter.WriteString(indent + indent + "w.Header().Set(\"Content-Type\", \"application/json\")\n")
 			serverWriter.WriteString(indent + indent + "w.WriteHeader(http.StatusOK)\n")
-			serverWriter.WriteString(indent + indent + "err = json.NewEncoder(w).Encode(resp)\n")
-			serverWriter.WriteString(indent + indent + "if err != nil {\n")
-			serverWriter.WriteString(indent + indent + indent + "http.Error(w, err.Error(), http.StatusInternalServerError)\n")
-			serverWriter.WriteString(indent + indent + indent + "return\n")
+			serverWriter.WriteString(indent + indent + "e = json.NewEncoder(w).Encode(resp)\n")
+			serverWriter.WriteString(indent + indent + "if e != nil {\n")
+			serverWriter.WriteString(indent + indent + indent + "log.Printf(\"[" + capitalizedServiceName + " - " + capitalizedRpcName + "error] writing to response stream: %s\", e.Error())\n")
 			serverWriter.WriteString(indent + indent + "}\n")
 			serverWriter.WriteString(indent + "})\n\n")
 
@@ -188,7 +207,7 @@ func (ServerGo) Generate(data target.Proto) ([]byte, error) {
 				interfaceWriter.WriteString("// " + strings.TrimSpace(c))
 				interfaceWriter.WriteString("\n")
 			}
-			interfaceWriter.WriteString(indent + capitalizedRpcName + "(ctx context.Context, req *" + capitalizedRequestName + ") (*" + capitalizedResponseName + ", error)\n")
+			interfaceWriter.WriteString(indent + capitalizedRpcName + "(ctx context.Context, req *" + capitalizedRequestName + ") (*" + capitalizedResponseName + ", *" + capitalizedServiceName + "Error)\n")
 		}
 
 		serverWriter.WriteString(indent + "return mux\n")

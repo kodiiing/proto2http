@@ -24,6 +24,13 @@ func (Browser) Generate(data target.Proto) ([]byte, error) {
 	var typesMap = make(typeMap)
 
 	for _, srv := range data.Services {
+		// Create an error class for this service
+		writer.WriteString("export class " + srv.Name + "Error extends Error {\n")
+		writer.WriteString(indent + "constructor(public readonly statusCode: number, public readonly fault: \"server\" | \"client\", message: string) {\n")
+		writer.WriteString(indent + indent + "super(message);\n")
+		writer.WriteString(indent + "}\n")
+		writer.WriteString("}\n\n")
+
 		if len(srv.Comment) > 0 {
 			var comments = strings.Split(srv.Comment, "\n")
 			writer.WriteString("/**\n")
@@ -191,10 +198,25 @@ func (Browser) Generate(data target.Proto) ([]byte, error) {
 			writer.WriteString(indent + indent + indent + indent + "body: JSON.stringify(input),\n")
 			writer.WriteString(indent + indent + indent + "}\n")
 			writer.WriteString(indent + indent + ");\n\n")
-			writer.WriteString(indent + indent + "const body = await request.json();\n")
-			// TODO: should this be more explicit?
-			writer.WriteString(indent + indent + "return body;\n")
 
+			// Handle status codes
+			writer.WriteString(indent + indent + "if (request.ok) {\n")
+			writer.WriteString(indent + indent + indent + "const body = await request.json() as " + rpc.Response.Name + ";\n")
+			writer.WriteString(indent + indent + indent + "return body;\n")
+			writer.WriteString(indent + indent + "};\n\n")
+
+			writer.WriteString(indent + indent + "if (request.status >= 400 && request.status <= 499) {\n")
+			writer.WriteString(indent + indent + indent + "const body = await request.json();\n")
+			writer.WriteString(indent + indent + indent + "throw new " + srv.Name + "Error(request.status, \"client\", body?.message ?? \"\");\n")
+			writer.WriteString(indent + indent + "};\n\n")
+
+			writer.WriteString(indent + indent + "if (request.status >= 500 && request.status <= 599) {\n")
+			writer.WriteString(indent + indent + indent + "const body = await request.json();\n")
+			writer.WriteString(indent + indent + indent + "throw new " + srv.Name + "Error(request.status, \"server\", body?.message ?? \"\");\n")
+			writer.WriteString(indent + indent + "};\n\n")
+
+			writer.WriteString(indent + indent + "const body = await request.text()")
+			writer.WriteString(indent + indent + "throw new " + srv.Name + "Error(request.status, \"server\", body);\n")
 			writer.WriteString(indent + "}\n\n")
 		}
 
