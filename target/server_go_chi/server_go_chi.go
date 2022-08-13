@@ -59,7 +59,7 @@ func (server) Generate(data target.Proto) ([]byte, error) {
 		typesWriter.WriteString(indent + "Error error\n")
 		typesWriter.WriteString("}\n\n")
 
-		serverWriter.WriteString("func New" + capitalizedServiceName + "Server(implementation " + capitalizedServiceName + "Server) http.Handler {\n")
+		serverWriter.WriteString("func New" + capitalizedServiceName + "Server(implementation " + capitalizedServiceName + "Server) *chi.Mux {\n")
 		serverWriter.WriteString(indent + "mux := chi.NewMux()\n")
 
 		interfaceWriter.WriteString("type " + capitalizedServiceName + "Server interface {\n")
