@@ -2,7 +2,8 @@ package handlers
 
 import (
 	"log"
-	"proto2http/target"
+
+	"github.com/kodiiing/proto2http/target"
 )
 
 type Dependency struct {

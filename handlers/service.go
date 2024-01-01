@@ -1,8 +1,9 @@
 package handlers
 
 import (
-	"proto2http/target"
 	"strings"
+
+	"github.com/kodiiing/proto2http/target"
 
 	"github.com/emicklei/proto"
 )

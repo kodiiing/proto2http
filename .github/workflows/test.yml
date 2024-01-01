@@ -15,20 +15,17 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
-          go-version: 1.18
-
-      - name: Installling dependencies
-        run: go mod download
+          go-version: 1.21
 
       - name: Build
-        run: go build cmd/main.go
+        run: go build -o proto2http cmd/main.go
 
       - name: Run test & coverage
         run: go test -v -coverprofile=coverage.out -covermode=atomic ./...
 
-      - uses: codecov/codecov-action@v2
+      - uses: codecov/codecov-action@v3

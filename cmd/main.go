@@ -6,11 +6,12 @@ import (
 	"log"
 	"os"
 	"path"
-	"proto2http/handlers"
-	"proto2http/target"
-	browserts "proto2http/target/browser_ts"
-	servergo "proto2http/target/server_go"
-	servergochi "proto2http/target/server_go_chi"
+
+	"github.com/kodiiing/proto2http/handlers"
+	"github.com/kodiiing/proto2http/target"
+	browserts "github.com/kodiiing/proto2http/target/browser_ts"
+	servergo "github.com/kodiiing/proto2http/target/server_go"
+	servergochi "github.com/kodiiing/proto2http/target/server_go_chi"
 
 	"github.com/emicklei/proto"
 )

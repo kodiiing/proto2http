@@ -1,9 +1,10 @@
 package servergo_test
 
 import (
-	"proto2http/target"
-	servergo "proto2http/target/server_go"
 	"testing"
+
+	"github.com/kodiiing/proto2http/target"
+	servergo "github.com/kodiiing/proto2http/target/server_go"
 )
 
 func TestFileExtension(t *testing.T) {

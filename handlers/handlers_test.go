@@ -3,9 +3,10 @@ package handlers_test
 import (
 	"errors"
 	"os"
-	"proto2http/handlers"
-	"proto2http/target"
 	"testing"
+
+	"github.com/kodiiing/proto2http/handlers"
+	"github.com/kodiiing/proto2http/target"
 
 	"github.com/emicklei/proto"
 )

@@ -2,9 +2,10 @@ package browserts
 
 import (
 	"bytes"
-	"proto2http/target"
 	"strconv"
 	"strings"
+
+	"github.com/kodiiing/proto2http/target"
 )
 
 type Browser struct{}
