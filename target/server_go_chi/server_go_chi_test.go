@@ -1,9 +1,10 @@
 package servergochi_test
 
 import (
-	"proto2http/target"
-	servergochi "proto2http/target/server_go_chi"
 	"testing"
+
+	"github.com/kodiiing/proto2http/target"
+	servergochi "github.com/kodiiing/proto2http/target/server_go_chi"
 )
 
 func TestFileExtension(t *testing.T) {

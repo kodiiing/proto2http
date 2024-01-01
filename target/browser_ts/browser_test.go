@@ -1,9 +1,10 @@
 package browserts_test
 
 import (
-	"proto2http/target"
-	browserts "proto2http/target/browser_ts"
 	"testing"
+
+	"github.com/kodiiing/proto2http/target"
+	browserts "github.com/kodiiing/proto2http/target/browser_ts"
 )
 
 func TestFileExtension(t *testing.T) {
