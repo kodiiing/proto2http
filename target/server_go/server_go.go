@@ -298,8 +298,7 @@ func (ServerGo) Generate(data target.Proto) ([]byte, error) {
 					}
 				}
 
-				capitalizedEnumValue := strings.ToUpper(string(t.Key[0])) + string(t.Key[1:])
-				typesWriter.WriteString(indent + capitalizedEnumName + capitalizedEnumValue + " " + capitalizedEnumName + " = " + strconv.Itoa(i) + "\n")
+				typesWriter.WriteString(indent + t.Key + " " + capitalizedEnumName + " = " + strconv.Itoa(i) + "\n")
 			}
 
 			typesWriter.WriteString(")\n\n")
